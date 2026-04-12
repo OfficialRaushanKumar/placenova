@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -14,13 +14,13 @@ export default function StudentCompanies() {
   const [selected, setSelected] = useState(null);
   const [filters, setFilters] = useState({ status: '', industry: '', search: '' });
 
-  const fetchCompanies = async () => {
+  const fetchCompanies = useCallback(async (searchTerm = '') => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (filters.status) params.set('status', filters.status);
       if (filters.industry) params.set('industry', filters.industry);
-      if (filters.search) params.set('search', filters.search);
+      if (searchTerm) params.set('search', searchTerm);
       const [compRes, appRes] = await Promise.all([
         api.get(`/companies?${params}`),
         api.get('/applications/my'),
@@ -28,9 +28,9 @@ export default function StudentCompanies() {
       setCompanies(compRes.data.data);
       setAppliedIds(appRes.data.data.map(a => a.company._id));
     } finally { setLoading(false); }
-  };
+  }, [filters.status, filters.industry]);
 
-  useEffect(() => { fetchCompanies(); }, [filters.status, filters.industry]);
+  useEffect(() => { fetchCompanies(); }, [fetchCompanies]);
 
   const handleApply = async (company, role) => {
     setApplying(company._id);
@@ -53,7 +53,7 @@ export default function StudentCompanies() {
       <div className="glass-card p-4 flex flex-wrap gap-3">
         <input className="form-input flex-1 min-w-48" placeholder="🔍 Search companies..." value={filters.search}
           onChange={e => setFilters(p => ({ ...p, search: e.target.value }))}
-          onKeyDown={e => e.key === 'Enter' && fetchCompanies()} />
+          onKeyDown={e => e.key === 'Enter' && fetchCompanies(filters.search)} />
         <select className="form-select w-40" value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value }))}>
           <option value="">All Status</option>
           {['upcoming','open','in_progress','completed'].map(s => <option key={s} value={s}>{s.replace('_',' ')}</option>)}
@@ -62,7 +62,7 @@ export default function StudentCompanies() {
           <option value="">All Industries</option>
           {INDUSTRIES.map(i => <option key={i} value={i}>{i}</option>)}
         </select>
-        <button onClick={fetchCompanies} className="btn-primary">Search</button>
+        <button onClick={() => fetchCompanies(filters.search)} className="btn-primary">Search</button>
       </div>
 
       {/* Company Grid */}
@@ -90,8 +90,8 @@ export default function StudentCompanies() {
 
                 {/* Roles */}
                 <div className="space-y-2">
-                  {c.roles?.slice(0, 2).map((r, i) => (
-                    <div key={i} className="flex items-center justify-between p-2.5 rounded-lg bg-surface-50">
+                  {c.roles?.slice(0, 2).map((r) => (
+                    <div key={`${r.title}-${r.package}-${r.type}`} className="flex items-center justify-between p-2.5 rounded-lg bg-surface-50">
                       <div>
                         <p className="text-xs font-semibold text-slate-900">{r.title}</p>
                         <p className="text-xs text-slate-500">{r.type} • {r.eligibility?.branches?.join(', ')}</p>
@@ -129,8 +129,8 @@ export default function StudentCompanies() {
 
       {/* Company Detail Modal */}
       {selected && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setSelected(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-slide-up" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-slide-up">
             <div className="p-6 border-b border-surface-100 flex items-start justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center text-2xl font-bold text-primary-700">
@@ -149,8 +149,8 @@ export default function StudentCompanies() {
               <div>
                 <h4 className="font-bold text-slate-900 mb-3">Available Roles</h4>
                 <div className="space-y-3">
-                  {selected.roles?.map((r, i) => (
-                    <div key={i} className="border border-surface-200 rounded-xl p-4">
+                  {selected.roles?.map((r) => (
+                    <div key={`${r.title}-${r.package}-${r.type}-${r.openings}`} className="border border-surface-200 rounded-xl p-4">
                       <div className="flex items-center justify-between mb-2">
                         <h5 className="font-semibold text-slate-900">{r.title}</h5>
                         <span className="font-bold text-accent-600">₹{r.package} LPA</span>
@@ -178,9 +178,9 @@ export default function StudentCompanies() {
                 <div>
                   <h4 className="font-bold text-slate-900 mb-3">Selection Process</h4>
                   <div className="flex gap-3 overflow-x-auto pb-2">
-                    {selected.selectionProcess.map((s, i) => (
-                      <div key={i} className="flex-shrink-0 p-3 bg-surface-50 rounded-xl text-center min-w-24">
-                        <div className="w-7 h-7 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center mx-auto mb-2">{i+1}</div>
+                    {selected.selectionProcess.map((s, idx) => (
+                      <div key={`${s.name}-${s.order || s.type || 'stage'}`} className="flex-shrink-0 p-3 bg-surface-50 rounded-xl text-center min-w-24">
+                        <div className="w-7 h-7 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center mx-auto mb-2">{idx + 1}</div>
                         <p className="text-xs font-semibold text-slate-900">{s.name}</p>
                       </div>
                     ))}

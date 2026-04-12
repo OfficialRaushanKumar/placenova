@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
@@ -20,7 +20,7 @@ export default function CoordApplications() {
   const [statusModal, setStatusModal] = useState(null);
   const [statusForm, setStatusForm] = useState({ status:'', note:'', package:'', joiningDate:'' });
 
-  const fetchApps = async () => {
+  const fetchApps = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({ page: filters.page, limit: 25 });
@@ -29,9 +29,9 @@ export default function CoordApplications() {
       setApps(data.data);
       setPagination(data.pagination);
     } finally { setLoading(false); }
-  };
+  }, [filters.page, filters.status]);
 
-  useEffect(() => { fetchApps(); }, [filters]);
+  useEffect(() => { fetchApps(); }, [fetchApps]);
 
   const openUpdate = (app) => {
     setStatusModal(app);
@@ -60,7 +60,7 @@ export default function CoordApplications() {
       <div className="glass-card p-4 flex flex-wrap gap-3">
         <select className="form-select w-52" value={filters.status} onChange={e => setFilters(p => ({ ...p, status: e.target.value, page: 1 }))}>
           <option value="">All Statuses</option>
-          {ALL_STATUSES.map(s => <option key={s} value={s}>{s.replace(/_/g,' ')}</option>)}
+          {ALL_STATUSES.map(s => <option key={s} value={s}>{s.replaceAll('_',' ')}</option>)}
         </select>
         <div className="flex gap-2 ml-auto">
           <span className="badge-blue self-center">{apps.filter(a => a.status === 'applied').length} Applied</span>
@@ -108,7 +108,7 @@ export default function CoordApplications() {
                       <td className="text-slate-600 text-sm">{app.roleTitle}</td>
                       <td className="text-slate-400 text-sm">{format(new Date(app.appliedAt), 'dd MMM yyyy')}</td>
                       <td>
-                        <span className={sc}>{app.status?.replace(/_/g,' ')}</span>
+                        <span className={sc}>{app.status?.replaceAll('_',' ')}</span>
                         {app.package && <p className="text-xs text-accent-600 font-semibold mt-1">₹{app.package} LPA</p>}
                       </td>
                       <td>
@@ -144,8 +144,8 @@ export default function CoordApplications() {
 
       {/* Status Update Modal */}
       {statusModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setStatusModal(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-slide-up p-6" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-slide-up p-6">
             <h3 className="font-bold text-slate-900 text-lg mb-1">Update Application Status</h3>
             <div className="flex items-center gap-2 mb-5">
               <span className="badge-blue">{statusModal.student?.name}</span>
@@ -154,23 +154,23 @@ export default function CoordApplications() {
             </div>
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
-                <label className="form-label">New Status</label>
-                <select className="form-select" value={statusForm.status} onChange={e => setStatusForm(p => ({ ...p, status: e.target.value }))}>
-                  {ALL_STATUSES.map(s => <option key={s} value={s}>{s.replace(/_/g,' ')}</option>)}
+                <label htmlFor="status-form-status" className="form-label">New Status</label>
+                <select id="status-form-status" className="form-select" value={statusForm.status} onChange={e => setStatusForm(p => ({ ...p, status: e.target.value }))}>
+                  {ALL_STATUSES.map(s => <option key={s} value={s}>{s.replaceAll('_',' ')}</option>)}
                 </select>
               </div>
               <div>
-                <label className="form-label">Note (optional)</label>
-                <textarea className="form-input" rows="2" placeholder="Add a note for this status change..." value={statusForm.note} onChange={e => setStatusForm(p => ({ ...p, note: e.target.value }))} />
+                <label htmlFor="status-form-note" className="form-label">Note (optional)</label>
+                <textarea id="status-form-note" className="form-input" rows="2" placeholder="Add a note for this status change..." value={statusForm.note} onChange={e => setStatusForm(p => ({ ...p, note: e.target.value }))} />
               </div>
               {statusForm.status === 'selected' && (<>
                 <div>
-                  <label className="form-label">Final Package (LPA)</label>
-                  <input type="number" step="0.1" min="0" className="form-input" placeholder="e.g. 12.5" value={statusForm.package} onChange={e => setStatusForm(p => ({ ...p, package: e.target.value }))} />
+                  <label htmlFor="status-form-package" className="form-label">Final Package (LPA)</label>
+                  <input id="status-form-package" type="number" step="0.1" min="0" className="form-input" placeholder="e.g. 12.5" value={statusForm.package} onChange={e => setStatusForm(p => ({ ...p, package: e.target.value }))} />
                 </div>
                 <div>
-                  <label className="form-label">Joining Date</label>
-                  <input type="date" className="form-input" value={statusForm.joiningDate} onChange={e => setStatusForm(p => ({ ...p, joiningDate: e.target.value }))} />
+                  <label htmlFor="status-form-joining-date" className="form-label">Joining Date</label>
+                  <input id="status-form-joining-date" type="date" className="form-input" value={statusForm.joiningDate} onChange={e => setStatusForm(p => ({ ...p, joiningDate: e.target.value }))} />
                 </div>
               </>)}
               <div className="flex gap-3 pt-2">

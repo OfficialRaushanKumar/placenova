@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
-const STATUS_COLORS = { upcoming:'badge-yellow', open:'badge-green', in_progress:'badge-blue', completed:'badge-gray', cancelled:'badge-red' };
 const STATUSES = ['upcoming','open','in_progress','completed','cancelled'];
 
 export default function CoordCompanies() {
@@ -14,7 +13,7 @@ export default function CoordCompanies() {
   const [filters, setFilters] = useState({ status:'', industry:'', page: 1 });
   const [deleting, setDeleting] = useState(null);
 
-  const fetchCompanies = async () => {
+  const fetchCompanies = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({ page: filters.page });
@@ -24,9 +23,9 @@ export default function CoordCompanies() {
       setCompanies(data.data);
       setPagination(data.pagination);
     } finally { setLoading(false); }
-  };
+  }, [filters.page, filters.status, filters.industry]);
 
-  useEffect(() => { fetchCompanies(); }, [filters.status, filters.industry, filters.page]);
+  useEffect(() => { fetchCompanies(); }, [fetchCompanies]);
 
   const handleStatusChange = async (id, status) => {
     await api.put(`/companies/${id}`, { hiringStatus: status });
@@ -35,7 +34,7 @@ export default function CoordCompanies() {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Remove ${name}?`)) return;
+    if (!globalThis.confirm(`Remove ${name}?`)) return;
     setDeleting(id);
     try {
       await api.delete(`/companies/${id}`);
@@ -92,8 +91,8 @@ export default function CoordCompanies() {
                     </td>
                     <td><span className="badge-blue">{c.industry}</span></td>
                     <td>
-                      {c.roles?.slice(0, 2).map((r, i) => (
-                        <p key={i} className="text-xs text-slate-700">
+                      {c.roles?.slice(0, 2).map((r) => (
+                        <p key={`${r.title}-${r.package}`} className="text-xs text-slate-700">
                           <span className="font-semibold">{r.title}</span>
                           <span className="text-accent-600 ml-1">₹{r.package} LPA</span>
                         </p>

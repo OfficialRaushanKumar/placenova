@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Doughnut, Bar } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import api from '../../utils/api';
 import useAuthStore from '../../context/authStore';
@@ -35,6 +35,10 @@ export default function StudentDashboard() {
 
   const { applicationStats, myApplications, openCompanies, appliedCompanyIds } = data || {};
   const sp = user?.studentProfile;
+  const currentHour = new Date().getHours();
+  let greeting = 'evening';
+  if (currentHour < 12) greeting = 'morning';
+  else if (currentHour < 17) greeting = 'afternoon';
 
   const doughnutData = {
     labels: ['Selected', 'Shortlisted', 'Applied', 'Rejected'],
@@ -50,7 +54,7 @@ export default function StudentDashboard() {
       {/* Header */}
       <div className="page-header">
         <h1 className="page-title">
-          Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'},{' '}
+          Good {greeting},{' '}
           <span className="text-primary-600">{user?.name?.split(' ')[0]}</span> 👋
         </h1>
         <p className="page-subtitle">{sp?.branch} • Year {sp?.year} • CGPA: {sp?.cgpa || 'N/A'}</p>

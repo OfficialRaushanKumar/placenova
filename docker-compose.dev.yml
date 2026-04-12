@@ -18,14 +18,14 @@ services:
     ports:
       - "5000:5000"
       - "9229:9229"             # Node.js debugger port
-    command: ["node", "--inspect=0.0.0.0:9229", "src/server.js"]
+    # command: ["node", "--inspect=0.0.0.0:9229", "src/server.js"]
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev  # Use CRA dev server instead of nginx
     environment:
-      REACT_APP_API_URL: http://localhost:5000/api
+      REACT_APP_API_URL: http://backend:5000/api
       CHOKIDAR_USEPOLLING: "true"
       WATCHPACK_POLLING: "true"
     volumes:

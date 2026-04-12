@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import placeNovaLogo from '../assets/placenova-logo.svg';
 
@@ -326,19 +326,18 @@ function DashboardMockup() {
 // ─── Main Landing Page ────────────────────────────────────────────────────────
 export default function LandingPage() {
   const [navScrolled, setNavScrolled] = useState(false);
-  const sectionsRef = useRef({});
 
   const handleLogoClick = (e) => {
-    if (window.location.pathname === '/') {
+    if (globalThis.location.pathname === '/') {
       e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      globalThis.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   useEffect(() => {
-    const handleScroll = () => setNavScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const handleScroll = () => setNavScrolled(globalThis.scrollY > 20);
+    globalThis.addEventListener('scroll', handleScroll);
+    return () => globalThis.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Scroll-triggered reveal
@@ -737,7 +736,15 @@ export default function LandingPage() {
               <div key={title}>
                 <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">{title}</div>
                 <div className="flex flex-col gap-2.5">
-                  {links.map(l => <a key={l} href="#" className="text-sm text-slate-400 hover:text-white transition-colors">{l}</a>)}
+                  {links.map((l) => (
+                    <button
+                      key={l}
+                      type="button"
+                      className="text-sm text-slate-400 hover:text-white transition-colors text-left"
+                    >
+                      {l}
+                    </button>
+                  ))}
                 </div>
               </div>
             ))}
