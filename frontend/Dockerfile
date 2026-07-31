@@ -8,7 +8,7 @@ RUN npm ci && npm cache clean --force
 
 COPY . .
 
-ARG REACT_APP_API_URL=http://localhost:5000/api
+ARG REACT_APP_API_URL=https://placenova-backend.onrender.com/api
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 RUN npm run build

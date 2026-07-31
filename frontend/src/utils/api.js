@@ -1,14 +1,12 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = "http://35.175.223.112:5000";
+const API_BASE_URL =
+	process.env.REACT_APP_API_URL || 'https://placenova-backend.onrender.com/api';
 
 const api = axios.create({
 	baseURL: API_BASE_URL,
-	timeout: 15000,
-	headers: {
-		'Content-Type': 'application/json',
-	},
+	withCredentials: true,
 });
 
 // Request interceptor — attach JWT
@@ -35,7 +33,7 @@ api.interceptors.response.use(
 
 			if (refreshToken) {
 				try {
-					const { data } = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+					const { data } = await api.post('/auth/refresh', {
 						refreshToken,
 					});
 

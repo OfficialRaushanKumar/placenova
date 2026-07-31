@@ -36,7 +36,7 @@ const useAuthStore = create(
       register: async (userData) => {
         set({ loading: true });
         try {
-          const { data } = await axios.post('http://35.175.223.112:5000/api/auth/register', userData);
+          const { data } = await api.post('/auth/register', userData);
           localStorage.setItem('token', data.token);
           localStorage.setItem('refreshToken', data.refreshToken);
           set({

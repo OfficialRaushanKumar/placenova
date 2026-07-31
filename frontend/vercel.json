@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "placement-tracker-frontend",
   "builds": [
     {
       "src": "package.json",
@@ -21,8 +20,5 @@
       "dest": "/index.html"
     }
   ],
-  "env": {
-    "REACT_APP_API_URL": "@react_app_api_url"
-  },
   "regions": ["bom1"]
 }

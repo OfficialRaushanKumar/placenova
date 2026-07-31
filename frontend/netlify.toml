@@ -5,7 +5,7 @@
 
 [build.environment]
   NODE_VERSION       = "20"
-  REACT_APP_API_URL  = "https://api.placetrack.yourdomain.com/api"
+  REACT_APP_API_URL  = "https://placenova-backend.onrender.com/api"
 
 # SPA routing — redirect all paths to index.html
 [[redirects]]
