@@ -328,16 +328,16 @@ export default function LandingPage() {
   const [navScrolled, setNavScrolled] = useState(false);
 
   const handleLogoClick = (e) => {
-    if (globalThis.location.pathname === '/') {
+    if (window.location.pathname === '/') {
       e.preventDefault();
-      globalThis.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   useEffect(() => {
-    const handleScroll = () => setNavScrolled(globalThis.scrollY > 20);
-    globalThis.addEventListener('scroll', handleScroll);
-    return () => globalThis.removeEventListener('scroll', handleScroll);
+    const handleScroll = () => setNavScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Scroll-triggered reveal

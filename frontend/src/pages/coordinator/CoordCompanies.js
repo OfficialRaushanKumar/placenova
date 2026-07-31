@@ -34,7 +34,7 @@ export default function CoordCompanies() {
   };
 
   const handleDelete = async (id, name) => {
-    if (!globalThis.confirm(`Remove ${name}?`)) return;
+    if (!window.confirm(`Remove ${name}?`)) return;
     setDeleting(id);
     try {
       await api.delete(`/companies/${id}`);

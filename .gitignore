@@ -50,3 +50,6 @@ k8s/**/secrets-real.yaml
 .terraform/
 *.tfstate
 *.tfstate.backup
+
+.vercel
+.env*
