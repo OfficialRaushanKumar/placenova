@@ -34,15 +34,25 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 
-app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL || 'http://localhost:3000',
-    process.env.FRONTEND_URL_PROD || 'https://your-app.vercel.app',
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://placenova-frontend.vercel.app',
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL_PROD,
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // ─── Rate Limiting ────────────────────────────────────────────────────────────
 const globalLimiter = rateLimit({
