@@ -42,7 +42,7 @@ configMapGenerator:
     behavior: merge
     literals:
       - node-env=production
-      - frontend-url=https://placetrack.yourdomain.com
+      - frontend-url=http://localhost
 
 # ── Image tags (updated by CI/CD) ─────────────────────────────────────────────
 images:

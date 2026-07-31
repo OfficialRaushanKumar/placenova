@@ -193,7 +193,7 @@ pipeline {
                             docker build \
                               --tag ${IMAGE_NAME_FRONTEND}:${IMAGE_TAG} \
                               --tag ${IMAGE_NAME_FRONTEND}:latest \
-                              --build-arg REACT_APP_API_URL=https://api.placetrack.yourdomain.com/api \
+                              --build-arg REACT_APP_API_URL=http://localhost:5000/api \
                               --cache-from ${IMAGE_NAME_FRONTEND}:latest \
                               ./frontend
                         """
@@ -289,7 +289,7 @@ pipeline {
             steps {
                 sh """
                     sleep 30
-                    STATUS=\$(curl -s -o /dev/null -w "%{http_code}" https://api.placetrack.yourdomain.com/health)
+                    STATUS=\$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/health)
                     if [ "\$STATUS" != "200" ]; then
                         echo "❌ Smoke test failed! Status: \$STATUS"
                         exit 1

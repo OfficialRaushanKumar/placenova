@@ -30,7 +30,7 @@ configMapGenerator:
     behavior: merge
     literals:
       - node-env=development
-      - frontend-url=https://dev.placetrack.yourdomain.com
+      - frontend-url=http://localhost
 
 images:
   - name: yourdockerhubuser/placement-tracker-backend

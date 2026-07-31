@@ -1,9 +1,5 @@
 version: '3.9'
 
-# ─── Development overrides ────────────────────────────────────────────────────
-# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
-# Adds: hot reload for backend, source mounts, debug ports
-
 services:
   backend:
     build:
@@ -25,7 +21,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.dev  # Use CRA dev server instead of nginx
     environment:
-      REACT_APP_API_URL: http://backend:5000/api
+      REACT_APP_API_URL: http://localhost:5000/api
       CHOKIDAR_USEPOLLING: "true"
       WATCHPACK_POLLING: "true"
     volumes:

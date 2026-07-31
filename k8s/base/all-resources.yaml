@@ -179,11 +179,11 @@ metadata:
 spec:
   tls:
     - hosts:
-        - placetrack.yourdomain.com
-        - api.placetrack.yourdomain.com
+        - localhost
+        - localhost
       secretName: placement-tracker-tls
   rules:
-    - host: placetrack.yourdomain.com
+    - host: localhost
       http:
         paths:
           - path: /
@@ -193,7 +193,7 @@ spec:
                 name: frontend-service
                 port:
                   number: 80
-    - host: api.placetrack.yourdomain.com
+    - host: localhost
       http:
         paths:
           - path: /
@@ -221,7 +221,7 @@ metadata:
   name: placement-tracker-config
   namespace: placement-tracker
 data:
-  frontend-url: "https://placetrack.yourdomain.com"
+  frontend-url: "http://localhost"
   node-env: "production"
   port: "5000"
 
